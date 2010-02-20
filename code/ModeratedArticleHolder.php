@@ -32,7 +32,9 @@ class ModeratedArticleHolder extends Page{
 
 		$fields->addFieldToTab('Root.Moderators',$msf);
 		
-		$content = new ComplexTableField(null,'Articles','ModeratedArticle',array('Title' => "Title",'YesNoApproved' => "Approved"),null,"",'Approved,Title');
+		$summaryfields = singleton('ModeratedArticle')->summaryFields();
+		
+		$content = new ComplexTableField(null,'Articles','ModeratedArticle',$summaryfields,null,"",'Approved,Title');
 		$fields->addFieldToTab('Root.Content.SubmittedArticles',$content);		
 		
 		return $fields;
@@ -113,6 +115,7 @@ class ModeratedArticleHolder_Controller extends Page_Controller{
 		$fields = new FieldSet(			
 			new TextField('Title'),
 			new HtmlEditorField('Content','Content',15),
+			new DateField('Expires','Expiry date (dd/mm/yyyy)'),
 			$filefield = new FileField('Attachment','Attachment')
 		);
 		

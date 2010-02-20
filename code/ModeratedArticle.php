@@ -16,9 +16,17 @@ class ModeratedArticle extends DataObject{
 	);
 	
 	static $casting = array(
-		'YesNoApproved' => 'Text'
+		'YesNoApproved' => 'Varchar',
+		'Email' => 'Varchar'
 	);
 	
+	static $summary_fields = array(
+		'Title' => "Title",
+		'Created' => 'Date',
+		'Email' => 'Submitter Email',		
+		'Expires' => 'Expires',
+		'YesNoApproved' => "Approved"
+	);
 
 	function Link(){
 		if($this->ArticleHolderID){
@@ -48,6 +56,12 @@ class ModeratedArticle extends DataObject{
 	
 	function YesNoApproved(){
 		return ($this->Approved)? "Yes" : "No";
+	}
+	
+	function getEmail(){
+		if($this->SubmitterID)
+			$this->Submitter()->Email;
+		return $this->SubmitterEmail;
 	}
 
 }
