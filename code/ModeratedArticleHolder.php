@@ -165,6 +165,15 @@ class ModeratedArticleHolder_Controller extends Page_Controller{
 		return false;
 	}
 	
+	
+	function rss() {
+		$events = DataObject::get('ModeratedArticle', 'Approved = TRUE AND ArticleHolderID = ' . $this->ID, 'Created DESC', '', 20);
+		if($events) {
+			$rss = new RSSFeed($events, $this->Link(), $this->Title, "", "Title", "Content");
+			$rss->outputToBrowser();
+		}
+		return array();
+	}
 
 	
 }
