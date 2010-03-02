@@ -172,7 +172,6 @@ class ModeratedArticleHolder_Controller extends Page_Controller{
 			$rss = new RSSFeed($events, $this->Link(), $this->Title, "", "Title", "Content");
 			$rss->outputToBrowser();
 		}
-		return array();
 	}
 
 	
