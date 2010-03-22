@@ -51,6 +51,7 @@ class ModeratedArticle extends DataObject{
 	function preview(){
 		//TODO: check moderator or ADMIN
 		
+		
 		return false;
 	}
 	
