@@ -3,7 +3,8 @@ class ModeratedArticleHolder extends Page{
 	
 	static $db = array(
 		'ItemPlural' => 'Varchar',
-		'ItemSingular' => 'Varchar'
+		'ItemSingular' => 'Varchar',
+		'AllowExpiry' => 'Boolean'
 	);
 	
 	static $many_many = array(
@@ -12,6 +13,10 @@ class ModeratedArticleHolder extends Page{
 	
 	static $has_many = array(
 		'Articles' => 'ModeratedArticle'
+	);
+	
+	static $defaults = array(
+		'AllowExpiry' => true
 	);
 	
 	//TODO: submit content permissions - who can submit?? (eg: members, group, anyone)
@@ -36,7 +41,7 @@ class ModeratedArticleHolder extends Page{
 		
 		$content = new ComplexTableField(null,'Articles','ModeratedArticle',$summaryfields,null,"",'Approved,Title');
 		$fields->addFieldToTab('Root.Content.SubmittedArticles',$content);		
-		
+		$fields->addFieldToTab('Root.Content.SubmittedArticles',new CheckboxField('AllowExpiry','Include expiry date option'));
 		return $fields;
 	}
 	
@@ -109,17 +114,20 @@ class ModeratedArticleHolder_Controller extends Page_Controller{
 		$config = HtmlEditorConfig::get('ModeratedArticleConfig');
 		$config->disablePlugins('table');
 		$config->disablePlugins('paste');
+		$config->enablePlugins('tabfocus'); //get tabbing working
+		$config->setOption('tab_focus',':prev,:next');
 		$config->disablePlugins('../../tinymce_advcode');
 		$config->setButtonsForLine(2);
 		
 		$fields = new FieldSet(			
 			new TextField('Title'),
 			new HtmlEditorField('Content','Content',15),
-			new DateField('Expires','Expiry date (dd/mm/yyyy)'),
 			$filefield = new FileField('Attachment','Attachment')
 		);
 		
-		//$filefield->setAllowedExtensions(array('doc','pdf','txt','docx','jpg','gif',''));
+		if($this->AllowExpiry)
+			$fields->insertAfter(new PopupDateTimeField('Expires','Expiry date'),'Content');
+		//$filefield->setAllowedExtensions(array('doc','pdf','txt','docx','jpg','gif','png',''));
 		
 		if(!Controller::CurrentMember()){
 			$fields->push(new EmailField('Email'));
@@ -127,8 +135,8 @@ class ModeratedArticleHolder_Controller extends Page_Controller{
 		$this->extend('updateFields', $fields);
 		
 		$actions = new FieldSet(
-			new FormAction('post', "Submit".$this->itemname),
-			new LiteralField('cancel', "<a href='".$this->Link()."'>Go back</a>")
+			new FormAction('post', "Submit".$this->itemname)
+			//new LiteralField('cancel', "<a href='".$this->Link()."'>Go back</a>")
 		);
 		$form = new Form($this,'SubmitForm',$fields,$actions);
 		return $form;		

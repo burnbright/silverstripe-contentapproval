@@ -6,7 +6,7 @@ class ModeratedArticle extends DataObject{
 		'Content' => 'HTMLText',
 		'SubmitterEmail' => 'Varchar',
 		'Approved' => 'Boolean',
-		'Expires' => 'Date'
+		'Expires' => 'SSDatetime'
 	);
 	
 	static $has_one = array(
