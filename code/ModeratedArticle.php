@@ -27,6 +27,8 @@ class ModeratedArticle extends DataObject{
 		'Expires' => 'Expires',
 		'YesNoApproved' => "Approved"
 	);
+	
+	static $default_sort = 'Created';
 
 	function Link(){
 		if($this->ArticleHolderID){

@@ -4,7 +4,8 @@ class ModeratedArticleHolder extends Page{
 	static $db = array(
 		'ItemPlural' => 'Varchar',
 		'ItemSingular' => 'Varchar',
-		'AllowExpiry' => 'Boolean'
+		'AllowExpiry' => 'Boolean',
+		'ArticlesPerPage' => 'Int'
 	);
 	
 	static $many_many = array(
@@ -42,6 +43,7 @@ class ModeratedArticleHolder extends Page{
 		$content = new ComplexTableField(null,'Articles','ModeratedArticle',$summaryfields,null,"",'Approved,Title');
 		$fields->addFieldToTab('Root.Content.SubmittedArticles',$content);		
 		$fields->addFieldToTab('Root.Content.SubmittedArticles',new CheckboxField('AllowExpiry','Include expiry date option'));
+		$fields->addFieldToTab('Root.Content.SubmittedArticles',new NumericField('ArticlesPerPage','ArticlesPerPage'));
 		return $fields;
 	}
 	
@@ -70,7 +72,7 @@ class ModeratedArticleHolder_Controller extends Page_Controller{
 	function index(){
 		
 		return array(
-			'Form' => '<a href="'.$this->Link()."submit".'">Submit'.$this->itemname.'</a>'
+			'Form' => '<a href="'.$this->Link("submit").'" class="submitarticlelink">Submit'.$this->itemname.'</a>'
 		);
 	}
 	
@@ -181,7 +183,22 @@ class ModeratedArticleHolder_Controller extends Page_Controller{
 			$rss->outputToBrowser();
 		}
 	}
-
+	
+	function Articles() {
+		$perpage = ($this->ArticlesPerPage) ? $this->ArticlesPerPage : 10 ;
+		if(!isset($_GET['start']) || !is_numeric($_GET['start']) || (int)$_GET['start'] < 1) $_GET['start'] = 0;
+		$SQL_start = (int)$_GET['start'];
+		$doSet = DataObject::get(
+			$callerClass = "ModeratedArticle",
+			$filter = "`ArticleHolderID` = '".$this->ID."' AND Approved = TRUE",
+			$sort = "",
+			$join = "",
+			$limit = "{$SQL_start},$perpage"
+		);
+		if($doSet && $this->ArticlesPerPage)
+			$doSet->setPageLength($this->ArticlesPerPage);
+		return $doSet ? $doSet : false;
+	}
 	
 }
 ?>
