@@ -30,20 +30,28 @@ class ModeratedArticleHolder extends Page{
 		$fields->addFieldToTab('Root.Content.Main',new TextField('ItemPlural','Name of plural items:'));
 		
 		$source = DataObject::get('Member',"","Surname");
-		$msf = new CheckboxSetField( //Not native to SS
+		$msf = new ManyManyComplexTableField(
+			$this,
 		    "Moderators",
-		    "Moderators", 
-		    $source->toDropdownMap('ID','Name')
+		    "Member", 
+		    array(
+		    	'FirstName' => 'First Name',
+		    	'Surname' => 'Surname'
+		    )
 		);
 
 		$fields->addFieldToTab('Root.Moderators',$msf);
 		
 		$summaryfields = singleton('ModeratedArticle')->summaryFields();
 		
-		$content = new ComplexTableField(null,'Articles','ModeratedArticle',$summaryfields,null,"",'Approved,Title');
+		$content = new ComplexTableField($this,'Articles','ModeratedArticle',$summaryfields,'getCMSFieldsForPopup',"",'Approved,Title');
 		$fields->addFieldToTab('Root.Content.SubmittedArticles',$content);		
 		$fields->addFieldToTab('Root.Content.SubmittedArticles',new CheckboxField('AllowExpiry','Include expiry date option'));
 		$fields->addFieldToTab('Root.Content.SubmittedArticles',new NumericField('ArticlesPerPage','ArticlesPerPage'));
+		
+		if($content && $name = $this->ItemSingular)
+			$content->setAddTitle("add $name");		
+		
 		return $fields;
 	}
 	
@@ -107,7 +115,7 @@ class ModeratedArticleHolder_Controller extends Page_Controller{
 		return array(
 			'Articles' => false,
 			'Form' => $this->SubmitForm(),
-			'Title' => "Submit".$this->itemname
+			'Title' => "Submit ".$this->itemname
 		);
 	}
 

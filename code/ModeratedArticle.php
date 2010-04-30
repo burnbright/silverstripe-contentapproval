@@ -15,6 +15,10 @@ class ModeratedArticle extends DataObject{
 		'Attachment' => 'File'
 	);
 	
+	static $many_many = array(
+		'Attachments' => 'File'
+	);
+	
 	static $casting = array(
 		'YesNoApproved' => 'Varchar',
 		'Email' => 'Varchar'
@@ -28,7 +32,24 @@ class ModeratedArticle extends DataObject{
 		'YesNoApproved' => "Approved"
 	);
 	
-	static $default_sort = 'Created';
+	static $searchable_fields = array(
+		'Title'
+	);
+	
+	static $default_sort = 'Created DESC';
+
+	//Hack for editing articles in cms
+	function getCMSFieldsForPopup(){
+		echo "<h1><a href=\"".Director::absoluteBaseURL()."admin/articlemoderation/ModeratedArticle/".$this->ID."/edit\" target=\"_top\">edit</a></h1>";
+		die();
+	}
+	
+	function getCMSFields(){
+		$fields = parent::getCMSFields();
+		$attachments = new TreeMultiselectField('Attachments','Attachments','File');
+		$fields->addFieldToTab('Root.Attachments',$attachments);
+		return $fields;
+	}
 
 	function Link(){
 		if($this->ArticleHolderID){
@@ -51,9 +72,16 @@ class ModeratedArticle extends DataObject{
 	}
 	
 	function preview(){
-		//TODO: check moderator or ADMIN
 		
 		
+		return Permission::check('ADMIN');
+	}
+	
+	function isModerator($member = null){
+		if(!$member) return false;
+		if(Permission::check('ADMIN','any',$member)) return true;
+		if($this->ArticleHolderID) return false;
+		if($this->ArticleHolder()->Moderators()->containsIDs(array($member->ID)))
 		return false;
 	}
 	

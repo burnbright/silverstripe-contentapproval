@@ -1,6 +1,6 @@
 <h1>$Title</h1>
 <% if Content %>
-<div id="$ClassName">
+<div id="$ClassName" class="moderatedarticle">
 	<% control Content %>
 	<div class="entry">
 		<div class="submitdetails">
@@ -8,13 +8,14 @@
 			<% if Created %><span class="dateposted">$Created.Long</span><% end_if %>
 		</div>
 		<div class="content">$Content</div>
-		<% if Attachment %>
+		<% if Attachments %>
 			<ul>
-			<% control Attachment %>
-				<li><a href="$Link">$Title</a></li>			
+			<% control Attachments %>
+				<li class="attachment"><a href="$Link" title="$FileType">$Title</a> <span class="details">[$Extension: $Size]</span></li>			
 			<% end_control %>
 			</ul>
 		<% end_if %>
+		<% if ArticleHolder %><a href="$ArticleHolder.Link">All <span class="pluralname"><% if ArticleHolder.ItemPlural %>$ArticleHolder.ItemPlural<% else %>items<% end_if %></span></a><% end_if %>
 	</div>
 	<% end_control %>
 </div>
