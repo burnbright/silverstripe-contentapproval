@@ -55,8 +55,8 @@ class ModeratedArticleHolder extends Page{
 		return $fields;
 	}
 	
-	function Articles(){
-		return DataObject::get('ModeratedArticle','Approved = TRUE && ArticleHolderID = '.$this->ID);
+	function Articles($limit = ''){
+		return DataObject::get('ModeratedArticle','Approved = TRUE && ArticleHolderID = '.$this->ID,'','',$limit);
 	}
 	
 }
