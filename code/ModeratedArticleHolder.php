@@ -135,7 +135,7 @@ class ModeratedArticleHolder_Controller extends Page_Controller{
 		$fields = new FieldSet(			
 			new TextField('Title'),
 			new HtmlEditorField('Content','Content',15),
-			$filefield = new FileField('Attachment','Attachment')
+			$filefield = new BBFileField('Attachment','Attachment')
 		);
 		
 		if($this->AllowExpiry)
@@ -146,13 +146,17 @@ class ModeratedArticleHolder_Controller extends Page_Controller{
 		}
 		
 		if(ClassInfo::exists('VariableGroupField')){ //use variable group field for multiple attachments
-			$vgf = new VariableGroupField('Attachments',0,
-				new FileField('Attachment','Attachment')
+			$fields->removeByName('Attachment');
+			
+			$vgf = new VariableGroupField('Attachments',1, //there needs to be at least one set for the form to be the correct enctype
+				new BBFileField('Attachment','Attachment'),
+				new TextField('Test'),
+				new TextField('AnotherTest')
 			);
 			$vgf->setAddRemoveLabels('Add Attachment','Remove');
 			$vgf->setLoadingImageURL('variablegroupfield/images/ajax-loader.gif');
+			$vgf->generateFields();
 			$fields->push($vgf);
-			$fields->removeByName('Attachment');
 		}
 		
 		$this->extend('updateFields', $fields);
@@ -162,25 +166,25 @@ class ModeratedArticleHolder_Controller extends Page_Controller{
 		);
 		
 		$validator = new RequiredFields('Title','Content');
-		
-		$form = new Form($this,'SubmitForm',$fields,$actions,$validator);
-		
+		$form = new ModeratedArticleSubmitForm($this,'SubmitForm',$fields,$actions,$validator);
 		$this->extend('updateSubmitForm',$form);
-		
 		return $form;
 	}
 	
 	function post($data,$form){
+		print_r($data);
+		die();
 		
 		//save content into new Content
 		$article = new ModeratedArticle();
-		$article->Approved = false;
+		$article->write(); //get an id to save components properly
+		$form->saveInto($article); //TODO: this is attempting to save one of the vgf image fields into the article 
+		$article->Approved = false; //TODO: allow articles submitted by moderators to be approved immediately
 		if($member = Controller::CurrentMember()){
 			$article->SubmitterID = $member->ID;
 		}
 		$article->ArticleHolderID = $this->ID;
 		$article->write();
-		$form->saveInto($article);
 		
 		$this->extend('updatepost',$form,$data,$article);
 		
@@ -199,7 +203,7 @@ class ModeratedArticleHolder_Controller extends Page_Controller{
 		//set form session message
 		$form->sessionMessage('Your content has been submitted for approval','good');	
 		
-		Director::redirectBack();
+		//Director::redirectBack();
 		return false;
 	}
 	
