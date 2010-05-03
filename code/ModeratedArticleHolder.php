@@ -63,16 +63,18 @@ class ModeratedArticleHolder extends Page{
 
 class ModeratedArticleHolder_Controller extends Page_Controller{
 	
-	protected $article = null;
+	//TODO: add allowed actions
+	
+	protected $article = null; //TODO: possibly start using modelfrontend?
 	
 	protected $itemname = "";
 	
-	//TODO: RSS feed of approved articles
 	function init(){
 		parent::init();
 		if(is_numeric(Director::urlParam('ID'))){
 			$id = Director::urlParam('ID');
 			$this->article = DataObject::get_by_id('ModeratedArticle',$id);
+			//TODO: don't allow if the item hasn't been approved
 		}
 		$this->itemname = ($this->ItemSingular) ? " ".$this->ItemSingular : "";
 	}
@@ -90,24 +92,25 @@ class ModeratedArticleHolder_Controller extends Page_Controller{
 					'Title' => $article->Title,
 					'Content' => $article
 				);
-		}			
+		}
+		Director::redirect($this->Link());
 		return array();
 	}
 	
+	/**
+	 * Action for approving content.
+	 */
 	function approve(){
-		if($this->article 
-		&& $this->Moderators()->Count() > 0
-		&& Controller::CurrentMember()
-		&& $this->Moderators()->containsIDs(array(Controller::CurrentMember()->ID))){
-			
+		if($this->article && $this->article->canApprove(Controller::CurrentMember())){
 			$this->article->approve();
 			return array(
 				'Title' => $this->article->Title." - Approved",
 				'Content' => 'Article has been approved. <a href="'.$this->article->Link().'">view'.$this->itemname.'</a>',
 				'Articles' => false
 			);
-		}			
-		return array();
+		}
+		Director::redirect($this->Link());
+		return false;
 	}
 	
 	
@@ -137,32 +140,49 @@ class ModeratedArticleHolder_Controller extends Page_Controller{
 		
 		if($this->AllowExpiry)
 			$fields->insertAfter(new PopupDateTimeField('Expires','Expiry date'),'Content');
-		//$filefield->setAllowedExtensions(array('doc','pdf','txt','docx','jpg','gif','png',''));
 		
 		if(!Controller::CurrentMember()){
-			$fields->push(new EmailField('Email'));
+			$fields->insertAfter(new EmailField('Email'),'Title');
 		}
+		
+		if(ClassInfo::exists('VariableGroupField')){ //use variable group field for multiple attachments
+			$vgf = new VariableGroupField('Attachments',0,
+				new FileField('Attachment','Attachment')
+			);
+			$vgf->setAddRemoveLabels('Add Attachment','Remove');
+			$vgf->setLoadingImageURL('variablegroupfield/images/ajax-loader.gif');
+			$fields->push($vgf);
+			$fields->removeByName('Attachment');
+		}
+		
 		$this->extend('updateFields', $fields);
 		
 		$actions = new FieldSet(
 			new FormAction('post', "Submit".$this->itemname)
-			//new LiteralField('cancel', "<a href='".$this->Link()."'>Go back</a>")
 		);
-		$form = new Form($this,'SubmitForm',$fields,$actions);
-		return $form;		
+		
+		$validator = new RequiredFields('Title','Content');
+		
+		$form = new Form($this,'SubmitForm',$fields,$actions,$validator);
+		
+		$this->extend('updateSubmitForm',$form);
+		
+		return $form;
 	}
 	
 	function post($data,$form){
 		
 		//save content into new Content
 		$article = new ModeratedArticle();
-		$form->saveInto($article);
 		$article->Approved = false;
 		if($member = Controller::CurrentMember()){
 			$article->SubmitterID = $member->ID;
 		}
 		$article->ArticleHolderID = $this->ID;
 		$article->write();
+		$form->saveInto($article);
+		
+		$this->extend('updatepost',$form,$data,$article);
 		
 		//send email to moderators
 		$moderators = $this->Moderators();
@@ -170,7 +190,7 @@ class ModeratedArticleHolder_Controller extends Page_Controller{
 			
 			$body = $article->customise(array(
 				'Holder' => $this
-			))->renderWith('ApprovalNeeded'); 
+			))->renderWith('ApprovalNeeded');
 			
 			$moderatoremails = $moderators->map('ID','Email');
 			$email = new Email(Email::getAdminEmail(),implode($moderatoremails,","),$this->Title.' - Article Approval Needed',$body);

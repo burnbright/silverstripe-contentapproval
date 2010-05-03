@@ -39,6 +39,7 @@ class ModeratedArticle extends DataObject{
 	static $default_sort = 'Created DESC';
 
 	//Hack for editing articles in cms
+	//TODO: make this better / proper
 	function getCMSFieldsForPopup(){
 		echo "<h1><a href=\"".Director::absoluteBaseURL()."admin/articlemoderation/ModeratedArticle/".$this->ID."/edit\" target=\"_top\">edit</a></h1>";
 		die();
@@ -67,13 +68,23 @@ class ModeratedArticle extends DataObject{
 		$this->write();	
 	}
 	
+	/**
+	 * Check that member can approve this article.
+	 */
+	function canApprove(Member $member){
+		if(!$member) return false;
+		if(Permission::checkMember($member,"ADMIN")) return true;
+		if($holder = $this->ArticleHolder())
+			return $holder->Moderators()->Count() > 0 && $holder->Moderators()->containsIDs(array(Controller::CurrentMember()->ID));
+		return false;
+	}
+	
 	function PreviewLink(){
 		return false;
 	}
 	
 	function preview(){
-		
-		
+		//TODO: finish me
 		return Permission::check('ADMIN');
 	}
 	
