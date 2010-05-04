@@ -148,7 +148,7 @@ class ModeratedArticleHolder_Controller extends Page_Controller{
 		if(ClassInfo::exists('VariableGroupField')){ //use variable group field for multiple attachments
 			$fields->removeByName('Attachment');
 			
-			$vgf = new VariableGroupField('Attachments',1, //there needs to be at least one set for the form to be the correct enctype
+			$vgf = new VariableGroupField('Attachments',0, //there needs to be at least one set for the form to be the correct enctype
 				new BBFileField('Attachment','Attachment')
 			);
 			$vgf->setAddRemoveLabels('Add Attachment','Remove');
@@ -165,7 +165,9 @@ class ModeratedArticleHolder_Controller extends Page_Controller{
 		);
 		
 		$validator = new RequiredFields('Title','Content');
-		$form = new ModeratedArticleSubmitForm($this,'SubmitForm',$fields,$actions,$validator);
+		
+		
+		$form = new ModeratedArticleSubmitForm($this,'SubmitForm',$fields,$actions,$validator); //a custom form that always sets the enctype to "multipart/form-data" so that files upload properly, if added
 		$this->extend('updateSubmitForm',$form);
 		return $form;
 	}
@@ -178,12 +180,14 @@ class ModeratedArticleHolder_Controller extends Page_Controller{
 		$form->saveInto($article); //TODO: this is attempting to save one of the vgf image fields into the article 
 		
 		//save all file attachments into assets
-		foreach($_FILES as $key => $info){
-			$upload = new Upload();
-			$file = new File();
-			$upload->loadIntoFile($_FILES[$key], $file, 'Uploads');
-			if(!$upload->isError()) 
-				$article->Attachments()->add($file);
+		if(isset($_FILES)){
+			foreach($_FILES as $key => $info){
+				$upload = new Upload();
+				$file = new File();
+				$upload->loadIntoFile($_FILES[$key], $file, 'Uploads');
+				if(!$upload->isError()) 
+					$article->Attachments()->add($file);
+			}
 		}
 		
 		$article->Approved = $article->canApprove(Member::currentUser()); //TODO: allow articles submitted by moderators to be approved immediately
