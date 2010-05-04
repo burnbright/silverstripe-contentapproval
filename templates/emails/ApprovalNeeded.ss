@@ -4,13 +4,17 @@
 <div style="border:1px solid #777777;padding:10px;margin:0 15px;">
 	$Content
 </div>
-<% if Attachment %><% control Attachment %>
-<p>Attachment: <strong><a href="$Link">$Title</a></strong></p>
+
+<p>Attachments: </p>
+<% if Attachments %><% control Attachments %>
+<p><strong><a href="$Link">$Title</a></strong></p>
 <% end_control %><% end_if %>
 
-<% if Submitter %><% control Submitter %>
-<p><strong>Submitted by $Name (<a href="mailto:$Email">$Email</a>)</strong></p>
-<% end_control %><% end_if %>
+<% if Email %>
+<p><strong>Submitted by <% if Submitter %>$Submitter.Name<% end_if %>(<a href="mailto:$Email">$Email</a>)</strong></p>
+<% end_if %>
+
+
 <% if PreviewLink %>
 <p>
 	Preview the article on the site: <a href="$PreviewLink">$PreviewLink</a>
