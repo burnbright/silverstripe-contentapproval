@@ -30,15 +30,22 @@ class ModeratedArticleHolder extends Page{
 		$fields->addFieldToTab('Root.Content.Main',new TextField('ItemPlural','Name of plural items:'));
 		
 		$source = DataObject::get('Member',"","Surname");
-		$msf = new ManyManyComplexTableField(
-			$this,
-		    "Moderators",
-		    "Member", 
-		    array(
-		    	'FirstName' => 'First Name',
-		    	'Surname' => 'Surname'
-		    )
-		);
+		
+		if(ClassInfo::exists('AsmselectField')){
+			$mods = $this->owner->Moderators();
+			$msf = new AsmselectField('Moderators','Moderators',$source->map('ID','Name'),$mods->map('ID','ID'));
+			
+		}else{
+			$msf = new ManyManyComplexTableField(
+				$this,
+			    "Moderators",
+			    "Member", 
+			    array(
+			    	'FirstName' => 'First Name',
+			    	'Surname' => 'Surname'
+			    )
+			);
+		}
 
 		$fields->addFieldToTab('Root.Moderators',$msf);
 		
