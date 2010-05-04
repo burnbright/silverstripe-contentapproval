@@ -22,7 +22,7 @@
 <% end_if %>
 <% if ApproveLink %>
 <p>
-	Or approve the article immediately by clicking this link: <a href="$ApproveLink">$ApproveLink</a>
+	You can approve the article immediately by clicking this link: <a href="$ApproveLink">$ApproveLink</a>. You might need to log in.
 </p>
 <% end_if %>
 

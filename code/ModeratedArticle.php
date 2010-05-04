@@ -11,8 +11,7 @@ class ModeratedArticle extends DataObject{
 	
 	static $has_one = array(
 		'Submitter' => 'Member',
-		'ArticleHolder' => 'ModeratedArticleHolder',
-		'Attachment' => 'File'
+		'ArticleHolder' => 'ModeratedArticleHolder'
 	);
 	
 	static $many_many = array(

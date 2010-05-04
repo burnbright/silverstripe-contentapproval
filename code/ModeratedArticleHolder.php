@@ -103,9 +103,11 @@ class ModeratedArticleHolder_Controller extends Page_Controller{
 	function approve(){
 		if($this->article && $this->article->canApprove(Controller::CurrentMember())){
 			$this->article->approve();
+			
+			$name = ($this->ItemSingular) ? $this->ItemSingluar : "Article";
 			return array(
 				'Title' => $this->article->Title." - Approved",
-				'Content' => 'Article has been approved. <a href="'.$this->article->Link().'">view'.$this->itemname.'</a>',
+				'Content' => $name.' has been approved. <a href="'.$this->article->Link().'">view</a>',
 				'Articles' => false
 			);
 		}
