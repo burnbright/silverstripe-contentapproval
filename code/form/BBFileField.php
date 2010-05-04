@@ -10,6 +10,7 @@ class BBFileField extends FileField{
 		//echo "attempting to saveInto $record->class $record->ID from $this->class ".$this->Name();
 		
 		//TODO: if $record->class name is decendant of File, then save into that
+		/*
 		if($record instanceof File){
 			$this->upload->setAllowedExtensions($this->allowedExtensions);
 			$this->upload->setAllowedMaxFileSize($this->allowedMaxFileSize);
@@ -39,6 +40,7 @@ class BBFileField extends FileField{
 				$record->{$this->name . 'ID'} = $file->ID;
 			}
 		}
+		*/
 	}
 	
 }

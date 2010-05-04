@@ -149,12 +149,11 @@ class ModeratedArticleHolder_Controller extends Page_Controller{
 			$fields->removeByName('Attachment');
 			
 			$vgf = new VariableGroupField('Attachments',1, //there needs to be at least one set for the form to be the correct enctype
-				new BBFileField('Attachment','Attachment'),
-				new TextField('Test'),
-				new TextField('AnotherTest')
+				new BBFileField('Attachment','Attachment')
 			);
 			$vgf->setAddRemoveLabels('Add Attachment','Remove');
 			$vgf->setLoadingImageURL('variablegroupfield/images/ajax-loader.gif');
+			$vgf->writeOnSave(false);
 			$vgf->generateFields();
 			$fields->push($vgf);
 		}
@@ -172,14 +171,22 @@ class ModeratedArticleHolder_Controller extends Page_Controller{
 	}
 	
 	function post($data,$form){
-		print_r($data);
-		die();
-		
+				
 		//save content into new Content
 		$article = new ModeratedArticle();
 		$article->write(); //get an id to save components properly
 		$form->saveInto($article); //TODO: this is attempting to save one of the vgf image fields into the article 
-		$article->Approved = false; //TODO: allow articles submitted by moderators to be approved immediately
+		
+		//save all file attachments into assets
+		foreach($_FILES as $key => $info){
+			$upload = new Upload();
+			$file = new File();
+			$upload->loadIntoFile($_FILES[$key], $file, 'Uploads');
+			if(!$upload->isError()) 
+				$article->Attachments()->add($file);
+		}
+		
+		$article->Approved = $article->canApprove(Member::currentUser()); //TODO: allow articles submitted by moderators to be approved immediately
 		if($member = Controller::CurrentMember()){
 			$article->SubmitterID = $member->ID;
 		}
@@ -203,7 +210,7 @@ class ModeratedArticleHolder_Controller extends Page_Controller{
 		//set form session message
 		$form->sessionMessage('Your content has been submitted for approval','good');	
 		
-		//Director::redirectBack();
+		Director::redirectBack();
 		return false;
 	}
 	
