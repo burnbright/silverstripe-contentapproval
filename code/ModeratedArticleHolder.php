@@ -175,6 +175,10 @@ class ModeratedArticleHolder_Controller extends Page_Controller{
 		
 		$validator = new RequiredFields('Title','Content');
 		
+		if(!Controller::CurrentMember()){
+			$validator->addRequiredField('Email');
+		}
+		
 		$form = new ModeratedArticleSubmitForm($this,'SubmitForm',$fields,$actions,$validator); //a custom form that always sets the enctype to "multipart/form-data" so that files upload properly, if added
 		$this->data()->extend('updateSubmitForm',$form);
 		return $form;
