@@ -167,7 +167,7 @@ class ModeratedArticleHolder_Controller extends Page_Controller{
 			$fields->push($vgf);
 		}
 		
-		$this->extend('updateFields', $fields);
+		$this->data()->extend('updateFields', $fields);
 		
 		$actions = new FieldSet(
 			new FormAction('post', "Submit".$this->itemname)
@@ -175,9 +175,8 @@ class ModeratedArticleHolder_Controller extends Page_Controller{
 		
 		$validator = new RequiredFields('Title','Content');
 		
-		
 		$form = new ModeratedArticleSubmitForm($this,'SubmitForm',$fields,$actions,$validator); //a custom form that always sets the enctype to "multipart/form-data" so that files upload properly, if added
-		$this->extend('updateSubmitForm',$form);
+		$this->data()->extend('updateSubmitForm',$form);
 		return $form;
 	}
 	
