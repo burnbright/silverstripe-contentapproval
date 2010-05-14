@@ -1,7 +1,6 @@
 <h1>$Title</h1>
 $Content
 $Form
-<% if ItemPlural %><h2>$ItemPlural</h2><% end_if %>
 <% if Articles %>
 <div id="$ClassName">
 	<% include Pagination %>
