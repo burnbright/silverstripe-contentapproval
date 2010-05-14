@@ -76,6 +76,15 @@ class ModeratedArticleHolder_Controller extends Page_Controller{
 	
 	protected $itemname = "";
 	
+	static $allowed_actions = array(
+		'index',
+		'show',
+		'rss',
+		'submit',
+		'SubmitForm',
+		'approve'
+	);
+	
 	function init(){
 		parent::init();
 		if(is_numeric(Director::urlParam('ID'))){
@@ -122,12 +131,12 @@ class ModeratedArticleHolder_Controller extends Page_Controller{
 		return false;
 	}
 	
-	
 	function submit(){
+		$submititem = ($this->itemname) ? " ".$this->itemname : "";
 		return array(
 			'Articles' => false,
 			'Form' => $this->SubmitForm(),
-			'Title' => "Submit ".$this->itemname
+			'Title' => "Submit".$submititem
 		);
 	}
 

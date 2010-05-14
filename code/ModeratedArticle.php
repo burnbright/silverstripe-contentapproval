@@ -51,15 +51,15 @@ class ModeratedArticle extends DataObject{
 		return $fields;
 	}
 
-	function Link(){
+	function Link($action = 'show'){
 		if($this->ArticleHolderID){
-			return $this->ArticleHolder()->Link().'show/'.$this->ID."/";
+			return $this->ArticleHolder()->Link($action).'/'.$this->ID."/";
 		}
 		return false;
 	}
 	
 	function ApproveLink(){
-		return $this->ArticleHolder()->Link().'approve/'.$this->ID."/";
+		return $this->Link('approve');
 	}
 			
 	function approve(){
