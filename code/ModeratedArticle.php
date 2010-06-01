@@ -2,7 +2,7 @@
 class ModeratedArticle extends DataObject{
 	
 	static $db = array(
-		'Title' => 'Varchar',
+		'Title' => 'Varchar(255)',
 		'Content' => 'HTMLText',
 		'SubmitterEmail' => 'Varchar',
 		'Approved' => 'Boolean',
