@@ -41,7 +41,7 @@ class ModeratedArticle extends DataObject{
 		
 		if($filter != "") $filter = "AND $filter";
 		
-		return DataObject::get("ModeratedArticle", "(Approved = TRUE) AND (Expires < NOW())$filter", $sort, "", $limit); // && ShowInMenus = TRUE
+		return DataObject::get("ModeratedArticle", "(Approved = TRUE) AND ((Expires < NOW()) OR (Expires IS NULL))$filter", $sort, "", $limit); // && ShowInMenus = TRUE
 	}
 
 	//Hack for editing articles in cms
