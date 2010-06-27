@@ -52,7 +52,7 @@ class ModeratedArticleHolder extends Page{
 		$summaryfields = singleton('ModeratedArticle')->summaryFields();
 		
 		$content = new ComplexTableField($this,'Articles','ModeratedArticle',$summaryfields,'getCMSFieldsForPopup',"",'Approved,Title');
-		$fields->addFieldToTab('Root.Content.SubmittedArticles',$content);		
+		$fields->addFieldToTab('Root.Content.SubmittedArticles',$content);
 		$fields->addFieldToTab('Root.Content.SubmittedArticles',new CheckboxField('AllowExpiry','Include expiry date option'));
 		$fields->addFieldToTab('Root.Content.SubmittedArticles',new NumericField('ArticlesPerPage','ArticlesPerPage'));
 		
@@ -89,7 +89,7 @@ class ModeratedArticleHolder_Controller extends Page_Controller{
 		parent::init();
 		if(is_numeric(Director::urlParam('ID'))){
 			$id = Director::urlParam('ID');
-			$this->article = DataObject::get_one('ModeratedArticle',"ID = $id AND (Approved = TRUE) AND (Expires < NOW)");
+			$this->article = DataObject::get_one('ModeratedArticle',"ID = $id AND (Approved = TRUE) AND (Expires < NOW())");
 		}
 		$this->itemname = ($this->ItemSingular) ? " ".$this->ItemSingular : "";
 	}
