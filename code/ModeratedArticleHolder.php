@@ -63,7 +63,7 @@ class ModeratedArticleHolder extends Page{
 	}
 	
 	function Articles($limit = ''){
-		return DataObject::get('ModeratedArticle','Approved = TRUE && ArticleHolderID = '.$this->ID,'','',$limit);
+		return ModeratedArticle::get('ArticleHolderID = '.$this->ID,"Created DESC",$limit);
 	}
 	
 }
@@ -89,8 +89,7 @@ class ModeratedArticleHolder_Controller extends Page_Controller{
 		parent::init();
 		if(is_numeric(Director::urlParam('ID'))){
 			$id = Director::urlParam('ID');
-			$this->article = DataObject::get_by_id('ModeratedArticle',$id);
-			//TODO: don't allow if the item hasn't been approved
+			$this->article = DataObject::get_one('ModeratedArticle',"ID = $id AND (Approved = TRUE) AND (Expires < NOW)");
 		}
 		$this->itemname = ($this->ItemSingular) ? " ".$this->ItemSingular : "";
 	}
