@@ -41,7 +41,11 @@ class ModeratedArticle extends DataObject{
 		if($filter != "") $filter = "AND $filter";
 		return DataObject::get("ModeratedArticle", "(Approved = TRUE) AND ((Expires < NOW()) OR (Expires IS NULL))$filter", $sort, "", $limit);
 	}
-
+	
+	static function get_by_id($id){
+		return DataObject::get_one('ModeratedArticle',"ID = $id AND (Approved = TRUE) AND (Expires < NOW())");
+	}
+	
 	//Hack for editing articles in cms
 	//TODO: make this better / proper
 	function getCMSFieldsForPopup(){

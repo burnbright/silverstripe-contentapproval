@@ -89,7 +89,7 @@ class ModeratedArticleHolder_Controller extends Page_Controller{
 		parent::init();
 		if(is_numeric(Director::urlParam('ID'))){
 			$id = Director::urlParam('ID');
-			$this->article = DataObject::get_one('ModeratedArticle',"ID = $id AND (Approved = TRUE) AND (Expires < NOW())");
+			$this->article = ModeratedArticle::get_by_id($id);
 		}
 		$this->itemname = ($this->ItemSingular) ? " ".$this->ItemSingular : "";
 	}
