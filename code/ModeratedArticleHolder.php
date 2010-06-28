@@ -240,7 +240,7 @@ class ModeratedArticleHolder_Controller extends Page_Controller{
 	
 	
 	function rss() {
-		$events = DataObject::get('ModeratedArticle', 'Approved = TRUE AND ArticleHolderID = ' . $this->ID, 'Created DESC', '', 20);
+		$events = ModeratedArticle::get('ArticleHolderID = ' . $this->ID, '', 20);
 		if($events) {
 			$rss = new RSSFeed($events, $this->Link(), $this->Title, "", "Title", "Content");
 			$rss->outputToBrowser();
@@ -251,11 +251,9 @@ class ModeratedArticleHolder_Controller extends Page_Controller{
 		$perpage = ($this->ArticlesPerPage) ? $this->ArticlesPerPage : 10 ;
 		if(!isset($_GET['start']) || !is_numeric($_GET['start']) || (int)$_GET['start'] < 1) $_GET['start'] = 0;
 		$SQL_start = (int)$_GET['start'];
-		$doSet = DataObject::get(
-			$callerClass = "ModeratedArticle",
-			$filter = "`ArticleHolderID` = '".$this->ID."' AND Approved = TRUE",
+		$doSet = ModeratedArticle::get(
+			$filter = "`ArticleHolderID` = '".$this->ID."'",
 			$sort = "",
-			$join = "",
 			$limit = "{$SQL_start},$perpage"
 		);
 		if($doSet && $this->ArticlesPerPage)

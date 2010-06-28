@@ -37,13 +37,16 @@ class ModeratedArticle extends DataObject{
 	
 	static $default_sort = 'Created DESC';
 	
-	static function get($filter = "", $sort = "Created DESC",$limit = 5){
-		if($filter != "") $filter = "AND $filter";
-		return DataObject::get("ModeratedArticle", "(Approved = TRUE) AND ((Expires < NOW()) OR (Expires IS NULL))$filter", $sort, "", $limit);
+	/**
+	 * Removes the need to check for expired / approved
+	 */
+	static function get($filter = "", $sort = "",$limit = 5){
+		if($filter != "") $filter = " AND $filter";
+		return DataObject::get("ModeratedArticle", "(Approved = TRUE) AND ((Expires > NOW()) OR (Expires IS NULL))$filter", $sort, "", $limit);
 	}
 	
 	static function get_by_id($id){
-		return DataObject::get_one('ModeratedArticle',"ID = $id AND (Approved = TRUE) AND (Expires < NOW())");
+		return DataObject::get_one('ModeratedArticle',"ID = $id AND (Approved = TRUE) AND (Expires > NOW())");
 	}
 	
 	//Hack for editing articles in cms
