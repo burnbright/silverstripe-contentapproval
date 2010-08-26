@@ -46,7 +46,7 @@ class ModeratedArticle extends DataObject{
 	}
 	
 	static function get_by_id($id){
-		return DataObject::get_one('ModeratedArticle',"ID = $id AND (Approved = TRUE) AND (Expires > NOW())");
+		return DataObject::get_one('ModeratedArticle',"ID = $id AND (Approved = TRUE) AND ((Expires > NOW()) OR (Expires IS NULL))");
 	}
 	
 	//Hack for editing articles in cms
