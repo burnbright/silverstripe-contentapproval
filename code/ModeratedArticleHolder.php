@@ -220,14 +220,14 @@ class ModeratedArticleHolder_Controller extends Page_Controller{
 		$this->extend('updatepost',$form,$data,$article);
 		
 		//send email to moderators
-		$moderators = $this->Moderators();
-		if($moderators->Count() > 0){
+		
+		if(!$article->Approved){
 			
 			$body = $article->customise(array(
 				'Holder' => $this
 			))->renderWith('ApprovalNeeded');
-			
-			$moderatoremails = $moderators->map('ID','Email');
+			$moderators = $this->Moderators();
+			$moderatoremails = ($moderators->Count() > 0) ? $moderators->map('ID','Email') : array(Email::getAdminEmail());
 			$email = new Email(Email::getAdminEmail(),implode($moderatoremails,","),$this->Title.' - Article Approval Needed',$body);
 			$result = $email->send();
 		}
