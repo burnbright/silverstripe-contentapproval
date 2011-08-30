@@ -1,1 +1,5 @@
 CMS content not working
+
+Allow submitting pages, rather than just content.
+
+Remove Moderated article etc

@@ -1,10 +1,10 @@
-<h1>$Title</h1>
+<h1 class="pagetitle">$Title</h1>
 $Content
-$Form
-<% if Articles %>
+
+<% if ApprovedPages %>
 <div id="$ClassName">
-	<% include Pagination %>
-	<% control Articles %>
+	<% include ApprovedPagePagination %>
+	<% control ApprovedPages %>
 	<div class="entry">
 		<h3><% if Link %><a href="$Link">$Title</a><% else %>$Title<% end_if %></h3>
 		<p class="submitdetails">
@@ -13,6 +13,8 @@ $Form
 		</p>
 	</div>
 	<% end_control %>
-	<% include Pagination %>
+	<% include ApprovedPagePagination %>
 </div>
 <% end_if %>
+
+$Form
