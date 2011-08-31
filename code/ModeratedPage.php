@@ -74,7 +74,11 @@ class ModeratedPage extends Page{
 	 */
 	static function get($filter = "", $sort = "",$limit = 5){
 		if($filter != "") $filter = " AND $filter";
-		return DataObject::get("ModeratedPage", "(Approved = TRUE) AND ((Expires > NOW()) OR (Expires IS NULL))$filter", $sort, "", $limit);
+		return DataObject::get("ModeratedPage", "(Approved = 1) AND ((Expires > NOW()) OR (Expires IS NULL))$filter", $sort, "", $limit);
+	}
+
+	static function get_unapproved(){
+		return DataObject::get("ModeratedPage","\"Approved\" = 0");
 	}
 
 	/**
