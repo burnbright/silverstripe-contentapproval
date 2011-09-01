@@ -241,8 +241,9 @@ class ModeratedPageHolder_Controller extends Page_Controller{
 		))->renderWith('ApprovalNeeded');
 		$moderators = $this->Moderators();
 		$moderatoremails = ($moderators->Count() > 0) ? $moderators->map('ID','Email') : array(Email::getAdminEmail());
-		$subject = sprintf(_t("ModeratedPage.APPROVALEMAILSUBJECT".'%s - %s Approval Needed'),$this->Title,$this->getItemName());
+		$subject = sprintf(_t("ModeratedPage.APPROVALEMAILSUBJECT",'Approval needed for: %s - %s'),$this->getItemName(),$mpage->getTitle());
 		$email = new Email(Email::getAdminEmail(),implode($moderatoremails,","),$subject,$body);
+		$email->replyTo($mpage->getSubmitterEmail());
 		$result = $email->send();
 
 		$form->sessionMessage('Your content has been submitted for approval','good');//set form session message

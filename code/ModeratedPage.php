@@ -81,6 +81,12 @@ class ModeratedPage extends Page{
 		return DataObject::get("ModeratedPage","\"Approved\" = 0");
 	}
 
+	function getSubmitterEmail(){
+		if($member = $this->Submitter())
+			return $member->Email;
+		return $this->SubmitterEmail;
+	}
+
 	/**
 	* Check that member can approve this article.
 	*/
