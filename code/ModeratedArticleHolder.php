@@ -161,7 +161,7 @@ class ModeratedArticleHolder_Controller extends Page_Controller{
 		$fields = new FieldSet(
 			new TextField('Title'),
 			new HtmlEditorField('Content','Content',15),
-			$filefield = new BBFileField('Attachment','Attachment')
+			$filefield = new NoSaveFileField('Attachment','Attachment')
 		);
 
 		if($this->AllowExpiry)
@@ -175,7 +175,7 @@ class ModeratedArticleHolder_Controller extends Page_Controller{
 			$fields->removeByName('Attachment');
 
 			$vgf = new VariableGroupField('Attachments',0, //there needs to be at least one set for the form to be the correct enctype
-				new BBFileField('Attachment','Attachment')
+				new NoSaveFileField('Attachment','Attachment')
 			);
 			$vgf->setAddRemoveLabels('Add Attachment','Remove');
 			$vgf->setLoadingImageURL('variablegroupfield/images/ajax-loader.gif');
